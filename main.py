@@ -68,7 +68,7 @@ class IRSystemWebUI:
             """)
 
         # Search Button
-        if st.button("🔍 Search", type="primary"):
+        if st.button("Search", type="primary"):
             if not query:
                 st.warning("Please enter a query")
             else:

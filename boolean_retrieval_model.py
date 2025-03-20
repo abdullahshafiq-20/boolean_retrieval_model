@@ -50,7 +50,7 @@ class InformationRetrievalSystem:
     def _build_indexes(self):
         print("Building indexes...")
         try:
-            if os.path.exists('ir_index.json'):
+            if os.path.exists('indexes.json'):
                 self._load_indexes()
                 print("Loaded existing indexes.")
                 return
@@ -129,7 +129,7 @@ class InformationRetrievalSystem:
         }
         
         try:
-            with open('ir_index.json', 'w', encoding='utf-8') as f:
+            with open('indexes.json', 'w', encoding='utf-8') as f:
                 json.dump(index_data, f, indent=2, ensure_ascii=False)
             print("Indexes saved successfully")
         except Exception as e:
