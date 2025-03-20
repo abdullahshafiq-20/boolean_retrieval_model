@@ -293,28 +293,28 @@ def main():
     
     ir_system = InformationRetrievalSystem(docs_folder, stop_words_file)
     
-    # print("\nBoolean Information Retrieval System")
-    # print("===================================")
-    # print("Query syntax:")
-    # print("- Simple term query: term")
-    # print("- Boolean query: term1 AND term2, term1 OR term2, NOT term")
-    # print("- Complex Boolean query: term1 AND term2 AND term3")
-    # print("- Proximity query: term1 term2 /k (where k is the maximum distance)")
-    # print("- Enter 'exit' to quit")
-    # print("===================================\n")
+    print("\nBoolean Information Retrieval System")
+    print("===================================")
+    print("Query syntax:")
+    print("- Simple term query: term")
+    print("- Boolean query: term1 AND term2, term1 OR term2, NOT term")
+    print("- Complex Boolean query: term1 AND term2 AND term3")
+    print("- Proximity query: term1 term2 /k (where k is the maximum distance)")
+    print("- Enter 'exit' to quit")
+    print("===================================\n")
     
-    # while True:
-    #     query = input("Enter your query: ").strip()
+    while True:
+        query = input("Enter your query: ").strip()
         
-    #     if query.lower() == 'exit':
-    #         break
+        if query.lower() == 'exit':
+            break
         
-    #     if not query:
-    #         continue
+        if not query:
+            continue
         
-    #     doc_ids = ir_system.process_query(query)
-    #     ir_system.print_results(doc_ids)
-    #     print()
+        doc_ids = ir_system.process_query(query)
+        ir_system.print_results(doc_ids)
+        print()
 
 if __name__ == "__main__":
     # Check if NLTK stopwords are available, download if needed
