@@ -89,8 +89,8 @@ class IRSystemWebUI:
                             for doc_id in doc_ids:
                                 filename = self.ir_system.doc_ids[doc_id]
                                 results_data.append({
-                                    "Document ID": doc_id,
-                                    "Filename": filename
+                                    "Internal Document ID (Ref)": doc_id,
+                                    "Actual ID/Filename": filename
                                 })
                             
                             st.table(results_data)
