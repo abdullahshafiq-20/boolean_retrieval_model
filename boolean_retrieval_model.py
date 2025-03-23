@@ -190,7 +190,10 @@ class InformationRetrievalSystem:
     
     # for processing the boolean query
     def _process_boolean_query(self, query):
-
+        # Handle queries with brackets
+        if '(' in query:
+            return self._process_bracketed_query(query)
+            
         tokens = re.split(r'\s+(AND|OR|NOT)\s+', query)        
         if len(tokens) == 1:
             # Single term query
@@ -224,6 +227,78 @@ class InformationRetrievalSystem:
             i += 2
         
         return sorted(list(result))
+
+    def _process_bracketed_query(self, query):
+        """
+        Process boolean queries containing brackets for nested expressions.
+        Example: "computer AND science NOT (Times AND Series)"
+        """
+        if '(' not in query:
+            return self._process_boolean_query(query)
+        
+        stack = []
+        start = -1
+        
+        for i, char in enumerate(query):
+            if char == '(':
+                stack.append(i)
+            elif char == ')' and stack:
+                start = stack.pop()
+                end = i
+                break
+        
+        if start != -1:
+            inner_expr = query[start + 1:end].strip()
+            inner_result = self._process_boolean_query(inner_expr)
+            
+            placeholder = f"RESULT_{hash(str(inner_result))}"
+            
+            new_query = query[:start] + placeholder + query[end + 1:]
+            
+            final_result = self._process_bracketed_query(new_query)
+            
+            # If the placeholder is directly in the result, we need to replace it
+            if isinstance(final_result, list) and len(final_result) == 1 and str(final_result[0]).startswith("RESULT_"):
+                return inner_result
+            
+            # Process the query again with operators
+            tokens = re.split(r'\s+(AND|OR|NOT)\s+', new_query)
+            
+            # Initialize result based on the first token
+            if tokens[0] == placeholder:
+                result = set(inner_result)
+            else:
+                term = tokens[0].lower()
+                stemmed_term = self.stemmer.stem(term)
+                result = set(self.inverted_index.get(stemmed_term, []))
+            
+            i = 1
+            while i < len(tokens):
+                operator = tokens[i]
+                term = tokens[i + 1] if i + 1 < len(tokens) else ""
+                
+                if not term:
+                    break
+                
+                # Check if the term is our placeholder
+                if term == placeholder:
+                    term_docs = set(inner_result)
+                else:
+                    stemmed_term = self.stemmer.stem(term.lower())
+                    term_docs = set(self.inverted_index.get(stemmed_term, []))
+                
+                if operator == 'AND':
+                    result = result.intersection(term_docs)
+                elif operator == 'OR':
+                    result = result.union(term_docs)
+                elif operator == 'NOT':
+                    result = result.difference(term_docs)
+                
+                i += 2
+            
+            return sorted(list(result))
+        
+        return self._process_boolean_query(query)
     
     # for processing the proximity query
     def _process_proximity_query(self, query):
